@@ -37,8 +37,11 @@ export function getFormatter(format: OutputFormat): Formatter {
 /**
  * Register a custom formatter
  */
-export function registerFormatter(format: string, formatter: Formatter): void {
-	formatters.set(format as OutputFormat, formatter);
+export function registerFormatter(
+	format: OutputFormat,
+	formatter: Formatter,
+): void {
+	formatters.set(format, formatter);
 }
 
 /**

@@ -17,8 +17,7 @@ async function installApk(
 		replace: !args.includes("--no-replace"),
 		downgrade: args.includes("--downgrade"),
 		grantPermissions: args.includes("--grant"),
-		serial:
-			args.find((a) => a.includes(":") || /^[A-Z0-9]{6,}$/i.test(a)) ?? null,
+		serial: ctx.config.defaultSerial,
 	});
 
 	if (!input.success) {
@@ -31,8 +30,7 @@ async function installApk(
 
 	// Check if file exists
 	const file = Bun.file(apkPath);
-	const exists = await file.exists();
-	if (!exists) {
+	if (!(await file.exists())) {
 		return err("FILE_NOT_FOUND", `APK file not found: ${apkPath}`, {
 			trace: ctx.trace.finish(),
 		});

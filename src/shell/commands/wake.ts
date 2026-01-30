@@ -33,16 +33,16 @@ async function wake(
 	// Check if screen is on via dumpsys power
 	let wasAsleep = false;
 	const powerCheck = await ctx.adb.exec(
-		["shell", "dumpsys", "power", "|", "grep", "'Display Power'"],
+		["shell", "dumpsys power | grep 'Display Power'"],
 		execOpts,
 	);
 	ctx.trace.recordCall(
-		["shell", "dumpsys", "power"],
+		["shell", "dumpsys power"],
 		powerCheck.durationMs,
 		powerCheck.exitCode,
 	);
 
-	// Parse power state
+	// Parse power state - check for Display Power state=ON in output
 	wasAsleep = !powerCheck.stdout.includes("state=ON");
 
 	// Send WAKEUP keycode
@@ -77,8 +77,33 @@ async function wake(
 	// Small delay then swipe up to dismiss any remaining lock
 	await new Promise((r) => setTimeout(r, 300));
 
+	// Query screen size to calculate swipe coordinates dynamically
+	const wmResult = await ctx.adb.exec(["shell", "wm size"], execOpts);
+	let centerX = 540;
+	let startY = 1800;
+	let endY = 800;
+
+	// Parse "Physical size: 1080x2340" format
+	const sizeMatch = wmResult.stdout.match(/(\d+)x(\d+)/);
+	if (sizeMatch?.[1] && sizeMatch?.[2]) {
+		const width = Number(sizeMatch[1]);
+		const height = Number(sizeMatch[2]);
+		centerX = Math.round(width / 2);
+		startY = Math.round(height * 0.8); // 80% from top
+		endY = Math.round(height * 0.35); // 35% from top
+	}
+
 	const swipeResult = await ctx.adb.exec(
-		["shell", "input", "swipe", "540", "1800", "540", "800", "300"],
+		[
+			"shell",
+			"input",
+			"swipe",
+			String(centerX),
+			String(startY),
+			String(centerX),
+			String(endY),
+			"300",
+		],
 		execOpts,
 	);
 	ctx.trace.recordCall(

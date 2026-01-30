@@ -56,6 +56,7 @@ async function swipe(
 			String(startY),
 			String(endX),
 			String(endY),
+			String(durationMs),
 		],
 		result.durationMs,
 		result.exitCode,

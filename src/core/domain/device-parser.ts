@@ -78,19 +78,25 @@ export function parseDeviceLine(line: string): Device | null {
 
 /**
  * Parse device state string
+ * Note: "no permissions" appears as "no" in split output - caller handles full state
  */
 export function parseDeviceState(state: string | undefined): DeviceState {
 	if (!state) return "unknown";
 
-	switch (state.toLowerCase()) {
+	const normalized = state.toLowerCase();
+
+	// Handle "no permissions" (may be split or complete)
+	if (normalized === "no" || normalized.startsWith("no permissions")) {
+		return "no permissions";
+	}
+
+	switch (normalized) {
 		case "device":
 			return "device";
 		case "offline":
 			return "offline";
 		case "unauthorized":
 			return "unauthorized";
-		case "no":
-			return "no permissions"; // "no permissions" is split
 		case "bootloader":
 			return "bootloader";
 		case "recovery":

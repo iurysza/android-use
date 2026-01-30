@@ -14,7 +14,8 @@ async function getScreen(
 ): Promise<CommandResult<GetScreenOutput>> {
 	const input = GetScreenInputSchema.safeParse({
 		serial: args[0] ?? null,
-		includeInvisible: args.includes("--include-invisible"),
+		// Note: includeInvisible is not supported by uiautomator dump
+		// The flag is accepted for API consistency but has no effect
 	});
 
 	if (!input.success) {

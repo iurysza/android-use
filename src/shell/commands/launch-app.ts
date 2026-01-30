@@ -17,8 +17,7 @@ async function launchApp(
 		activity: args.find((a) => a.startsWith(".") || a.includes("Activity")),
 		wait: !args.includes("--no-wait"),
 		clearData: args.includes("--clear"),
-		serial:
-			args.find((a) => a.includes(":") || /^[A-Z0-9]{6,}$/i.test(a)) ?? null,
+		serial: ctx.config.defaultSerial,
 	});
 
 	if (!input.success) {

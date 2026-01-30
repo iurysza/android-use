@@ -2,7 +2,7 @@ import { SkillConfigSchema, type SkillConfig } from "@core/contracts/config.ts";
 import { createTraceBuilder } from "@core/types/trace.ts";
 import { createLocalAdbProvider } from "./providers/adb-local.ts";
 import { registry, type CommandContext } from "./registry.ts";
-import { format, type OutputFormat } from "./formatters/index.ts";
+import { format } from "./formatters/index.ts";
 
 // Import commands to register them
 import "./commands/index.ts";
@@ -203,8 +203,8 @@ export async function runCli(argv: string[]): Promise<number> {
 		ctx,
 	);
 
-	// Format and output
-	const output = format(result, config.outputFormat as OutputFormat);
+	// Format and output (outputFormat is validated by Zod to be "text" | "json")
+	const output = format(result, config.outputFormat);
 	console.log(output);
 
 	return result.exitCode;

@@ -13,26 +13,13 @@ async function typeText(
 	args: string[],
 	ctx: CommandContext,
 ): Promise<CommandResult<TypeTextOutput>> {
-	// Parse args: text [serial]
-	// Text might contain spaces, so join all args except last if it looks like serial
-	let textArg = args.join(" ");
-	let serial: string | null = null;
-
-	// Check if last arg looks like a device serial
-	const lastArg = args[args.length - 1];
-	if (
-		lastArg &&
-		(lastArg.includes(":") ||
-			/^[A-Z0-9]{6,}$/i.test(lastArg) ||
-			lastArg.startsWith("emulator-"))
-	) {
-		serial = lastArg;
-		textArg = args.slice(0, -1).join(" ");
-	}
+	// Parse args: all args are the text to type
+	// Serial is passed via --serial flag (ctx.config.defaultSerial) not inline
+	const textArg = args.join(" ");
 
 	const input = TypeTextInputSchema.safeParse({
 		text: textArg,
-		serial,
+		serial: ctx.config.defaultSerial,
 	});
 
 	if (!input.success) {
@@ -41,8 +28,7 @@ async function typeText(
 		});
 	}
 
-	const { text } = input.data;
-	serial = input.data.serial;
+	const { text, serial } = input.data;
 
 	// Split text into chunks to avoid command length limits
 	const chunks = splitTextForInput(text);

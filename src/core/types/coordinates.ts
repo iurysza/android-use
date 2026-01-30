@@ -34,6 +34,7 @@ export type SwipeDirection = "up" | "down" | "left" | "right";
 
 /**
  * Get center point of a rectangle
+ * Useful for tapping the center of UI element bounds
  */
 export function rectCenter(rect: Rect): Point {
 	return {
@@ -44,6 +45,7 @@ export function rectCenter(rect: Rect): Point {
 
 /**
  * Check if point is inside rect
+ * Useful for validating tap coordinates against UI element bounds
  */
 export function pointInRect(point: Point, rect: Rect): boolean {
 	return (

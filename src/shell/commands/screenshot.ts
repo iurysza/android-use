@@ -72,8 +72,10 @@ async function screenshot(
 	try {
 		const file = Bun.file(output);
 		byteSize = file.size;
-	} catch {
-		// Ignore size errors
+	} catch (e) {
+		if (ctx.config.verbose) {
+			console.warn(`[screenshot] Failed to get file size: ${e}`);
+		}
 	}
 
 	return ok(
