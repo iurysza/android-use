@@ -8,10 +8,10 @@ CLI + library for Android device control via ADB.
 ## Project Status
 
 ```
-Phase 1: Foundation    [████████████] COMPLETE
-Phase 2: Infrastructure [░░░░░░░░░░░░] NOT STARTED
-Phase 3: Commands       [░░░░░░░░░░░░] NOT STARTED
-Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
+Phase 1: Foundation      [████████████] COMPLETE
+Phase 2: Infrastructure  [████████████] COMPLETE
+Phase 3: Commands        [████████████] COMPLETE
+Phase 4: CLI & Polish    [████░░░░░░░░] IN PROGRESS
 ```
 
 ---
@@ -24,10 +24,10 @@ Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
 │           (Side Effects: ADB, File I/O, Console)            │
 │                                                             │
 │  src/shell/                                                 │
-│  ├── commands/     → Command implementations (EMPTY)        │
-│  ├── providers/    → ADB abstraction (EMPTY)                │
-│  ├── formatters/   → text/json output (EMPTY)               │
-│  └── observability/→ Trace impl (EMPTY)                     │
+│  ├── commands/     → 10 command implementations (DONE)      │
+│  ├── providers/    → ADB abstraction (DONE)                 │
+│  ├── formatters/   → text/json output (DONE)                │
+│  └── observability/→ Trace impl (via types)                 │
 └─────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -37,7 +37,7 @@ Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
 │  src/core/                                                  │
 │  ├── types/        → Domain types (DONE)                    │
 │  ├── contracts/    → Zod schemas (DONE)                     │
-│  └── domain/       → Pure business logic (EMPTY)            │
+│  └── domain/       → Pure parsers/utils (DONE)              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -47,6 +47,7 @@ Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
 
 ### Device Management
 - `src/core/types/device.ts` → Device, DeviceState, DeviceTransport, ScreenInfo
+- `src/core/domain/device-parser.ts` → `parseDeviceList()`, `findDevice()`, `isDeviceReady()`
 - States: device|offline|unauthorized|no permissions|bootloader|recovery|sideload|unknown
 - Transport: usb|wifi|unknown
 
@@ -58,6 +59,11 @@ Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
 - `src/core/types/keys.ts` → KEYCODES const, Keycode, KeyName
 - 25+ keycodes: HOME, BACK, POWER, VOLUME_*, DPAD_*, MEDIA_*, etc.
 - `resolveKeycode()`, `isKeyName()` helpers
+
+### Text Handling
+- `src/core/domain/text-escape.ts` → `escapeForAdbInput()`, `splitTextForInput()`
+- Handles: spaces→%s, shell chars, command length limits
+- `isAsciiPrintable()`, `escapeShellArg()` helpers
 
 ### App Management
 - `src/core/types/app.ts` → PackageName, ActivityComponent, AppInfo, LaunchOptions, InstallOptions
@@ -71,6 +77,42 @@ Phase 4: CLI & Polish   [░░░░░░░░░░░░] NOT STARTED
 ### Execution Trace
 - `src/core/types/trace.ts` → ExecutionTrace, AdbCall, TraceBuilder
 - `createTraceBuilder()` factory
+
+---
+
+## Shell Layer
+
+### Providers (`src/shell/providers/`)
+| Provider | Purpose |
+|----------|---------|
+| `adb.ts` | AdbProvider interface, ExecOptions, AdbResult |
+| `adb-local.ts` | LocalAdbProvider - real ADB via Bun.spawn |
+| `adb-mock.ts` | MockAdbProvider - testing with preset responses |
+
+**Key helpers:** `isAdbSuccess(result)`, `buildAdbArgs(args, serial)`
+
+### Formatters (`src/shell/formatters/`)
+| File | Purpose |
+|------|---------|
+| `index.ts` | `getFormatter()`, `format()`, `registerFormatter()` |
+| `text.ts` | ANSI colors, ✓/✗ symbols, NO_COLOR support |
+| `json.ts` | JSON.stringify (pretty + compact) |
+
+### Commands (`src/shell/commands/`)
+All 10 commands implemented:
+
+| Command | File | Purpose |
+|---------|------|---------|
+| check-device | `check-device.ts` | list/verify devices |
+| wake | `wake.ts` | wake + dismiss lock |
+| get-screen | `get-screen.ts` | dump UI XML |
+| tap | `tap.ts` | tap x,y |
+| type-text | `type-text.ts` | type text with escaping |
+| swipe | `swipe.ts` | swipe gesture |
+| key | `key.ts` | press keycode |
+| screenshot | `screenshot.ts` | capture screen |
+| launch-app | `launch-app.ts` | launch app |
+| install-apk | `install-apk.ts` | install APK |
 
 ---
 
@@ -109,12 +151,14 @@ SkillConfigSchema {
 
 ---
 
-## Data Flow (Planned)
+## Data Flow
 
 ```
 CLI args → Zod validate → Command handler → ADB provider → Parse output → CommandResult<T>
                 ↓                                                              ↓
            INVALID_INPUT                                              ok(data) | err(code)
+                                                                              ↓
+                                                                    Formatter → stdout
 ```
 
 ---
@@ -123,30 +167,48 @@ CLI args → Zod validate → Command handler → ADB provider → Parse output 
 
 ```
 src/
-├── index.ts              # CLI entry (placeholder)
+├── index.ts                  # Main entry point
 ├── core/
 │   ├── types/
-│   │   ├── index.ts      # Barrel export
-│   │   ├── device.ts     # Device, DeviceState, ScreenInfo
-│   │   ├── coordinates.ts# Point, Rect, SwipeGesture
-│   │   ├── keys.ts       # KEYCODES, resolveKeycode()
-│   │   ├── app.ts        # PackageName, AppInfo, LaunchOptions
-│   │   ├── result.ts     # CommandResult<T>, ok(), err()
-│   │   └── trace.ts      # ExecutionTrace, TraceBuilder
+│   │   ├── index.ts          # Barrel export
+│   │   ├── device.ts         # Device, DeviceState, ScreenInfo
+│   │   ├── coordinates.ts    # Point, Rect, SwipeGesture
+│   │   ├── keys.ts           # KEYCODES, resolveKeycode()
+│   │   ├── app.ts            # PackageName, AppInfo, LaunchOptions
+│   │   ├── result.ts         # CommandResult<T>, ok(), err()
+│   │   └── trace.ts          # ExecutionTrace, TraceBuilder
 │   ├── contracts/
-│   │   ├── index.ts      # Barrel export
-│   │   ├── inputs.ts     # 11 input schemas
-│   │   ├── outputs.ts    # 11 output schemas + CommandResultSchema
-│   │   └── config.ts     # SkillConfigSchema, DEFAULT_CONFIG
-│   └── domain/           # (empty - future pure logic)
+│   │   ├── index.ts          # Barrel export
+│   │   ├── inputs.ts         # 11 input schemas
+│   │   ├── outputs.ts        # 11 output schemas + CommandResultSchema
+│   │   └── config.ts         # SkillConfigSchema, DEFAULT_CONFIG
+│   └── domain/
+│       ├── index.ts          # Barrel export
+│       ├── device-parser.ts  # parseDeviceList(), findDevice()
+│       └── text-escape.ts    # escapeForAdbInput(), splitTextForInput()
 ├── shell/
-│   ├── commands/         # (empty)
-│   ├── providers/        # (empty)
-│   ├── formatters/       # (empty)
-│   └── observability/    # (empty)
-└── tests/
-    ├── core/             # (empty)
-    └── shell/            # (empty)
+│   ├── commands/
+│   │   ├── index.ts          # Barrel export
+│   │   ├── check-device.ts   # list/verify devices
+│   │   ├── wake.ts           # wake + dismiss lock
+│   │   ├── get-screen.ts     # dump UI XML
+│   │   ├── tap.ts            # tap x,y
+│   │   ├── type-text.ts      # type text
+│   │   ├── swipe.ts          # swipe gesture
+│   │   ├── key.ts            # press keycode
+│   │   ├── screenshot.ts     # capture screen
+│   │   ├── launch-app.ts     # launch app
+│   │   └── install-apk.ts    # install APK
+│   ├── providers/
+│   │   ├── index.ts          # Barrel export
+│   │   ├── adb.ts            # AdbProvider interface
+│   │   ├── adb-local.ts      # LocalAdbProvider (Bun.spawn)
+│   │   └── adb-mock.ts       # MockAdbProvider + presets
+│   └── formatters/
+│       ├── index.ts          # getFormatter(), format()
+│       ├── text.ts           # ANSI text formatter
+│       └── json.ts           # JSON formatter
+└── tests/                    # (pending)
 ```
 
 ---
@@ -168,20 +230,20 @@ src/
 
 ---
 
-## Planned Commands (v1)
+## Commands Status
 
-| Command | Input Schema | Output Schema | Status |
-|---------|--------------|---------------|--------|
-| check-device | CheckDeviceInputSchema | CheckDeviceOutputSchema | ⏳ |
-| wake | WakeInputSchema | WakeOutputSchema | ⏳ |
-| get-screen | GetScreenInputSchema | GetScreenOutputSchema | ⏳ |
-| tap | TapInputSchema | TapOutputSchema | ⏳ |
-| type-text | TypeTextInputSchema | TypeTextOutputSchema | ⏳ |
-| swipe | SwipeInputSchema | SwipeOutputSchema | ⏳ |
-| key | KeyInputSchema | KeyOutputSchema | ⏳ |
-| screenshot | ScreenshotInputSchema | ScreenshotOutputSchema | ⏳ |
-| launch-app | LaunchAppInputSchema | LaunchAppOutputSchema | ⏳ |
-| install-apk | InstallApkInputSchema | InstallApkOutputSchema | ⏳ |
+| Command | Schema | Handler | Status |
+|---------|--------|---------|--------|
+| check-device | ✓ | ✓ | ✅ |
+| wake | ✓ | ✓ | ✅ |
+| get-screen | ✓ | ✓ | ✅ |
+| tap | ✓ | ✓ | ✅ |
+| type-text | ✓ | ✓ | ✅ |
+| swipe | ✓ | ✓ | ✅ |
+| key | ✓ | ✓ | ✅ |
+| screenshot | ✓ | ✓ | ✅ |
+| launch-app | ✓ | ✓ | ✅ |
+| install-apk | ✓ | ✓ | ✅ |
 
 ---
 
@@ -197,12 +259,11 @@ src/
 
 ## Next Steps
 
-1. Implement ADB provider (`src/shell/providers/`)
-2. Add formatters (`src/shell/formatters/`)
-3. Build command registry + hooks
-4. Implement commands starting with `tap`
-5. Wire up CLI router
+1. Wire up CLI router with arg parsing
+2. Add tests using MockAdbProvider
+3. Add observability hooks (logging, metrics)
+4. Documentation and examples
 
 ---
 
-<!-- GIT_COMMIT: 0c17cebe0ca3dbfed5d4217c226205aadf5a6b50 -->
+<!-- GIT_COMMIT: d514726 -->

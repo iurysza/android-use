@@ -6,8 +6,8 @@ import {
 	inferTransport,
 	findDevice,
 	isDeviceReady,
-} from "../../core/domain/device-parser.ts";
-import type { Device } from "../../core/types/device.ts";
+} from "@core/domain/device-parser.ts";
+import type { Device } from "@core/types/device.ts";
 
 describe("parseDeviceList", () => {
 	test("parses multiple devices", () => {

@@ -1,10 +1,10 @@
 import { describe, expect, test, beforeEach } from "bun:test";
-import { registry, registerCommand } from "../../shell/registry.ts";
-import type { CommandContext, CommandHandler } from "../../shell/registry.ts";
-import { ok } from "../../core/types/result.ts";
-import { createTraceBuilder } from "../../core/types/trace.ts";
-import { DEFAULT_CONFIG } from "../../core/contracts/config.ts";
-import { createMockAdbProvider } from "../../shell/providers/adb-mock.ts";
+import { registry, registerCommand } from "@shell/registry.ts";
+import type { CommandContext, CommandHandler } from "@shell/registry.ts";
+import { ok } from "@core/types/result.ts";
+import { createTraceBuilder } from "@core/types/trace.ts";
+import { DEFAULT_CONFIG } from "@core/contracts/config.ts";
+import { createMockAdbProvider } from "@shell/providers/adb-mock.ts";
 
 function createTestContext(): CommandContext {
 	return {

@@ -1,4 +1,4 @@
-import type { CommandResult } from "../../core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
 import { formatText } from "./text.ts";
 import { formatJson } from "./json.ts";
 

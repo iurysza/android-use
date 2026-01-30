@@ -1,20 +1,20 @@
 import { describe, expect, test } from "bun:test";
-import type { CommandContext } from "../../shell/registry.ts";
-import { createTraceBuilder } from "../../core/types/trace.ts";
-import { DEFAULT_CONFIG } from "../../core/contracts/config.ts";
+import type { CommandContext } from "@shell/registry.ts";
+import { createTraceBuilder } from "@core/types/trace.ts";
+import { DEFAULT_CONFIG } from "@core/contracts/config.ts";
 import {
 	createMockAdbProvider,
 	MOCK_DEVICES_RESPONSE,
 	MOCK_NO_DEVICES_RESPONSE,
-} from "../../shell/providers/adb-mock.ts";
+} from "@shell/providers/adb-mock.ts";
 
 // Import commands (they self-register but we'll use them directly)
-import { checkDevice } from "../../shell/commands/check-device.ts";
-import { tap } from "../../shell/commands/tap.ts";
-import { swipe } from "../../shell/commands/swipe.ts";
-import { key } from "../../shell/commands/key.ts";
-import { typeText } from "../../shell/commands/type-text.ts";
-import { wake } from "../../shell/commands/wake.ts";
+import { checkDevice } from "@shell/commands/check-device.ts";
+import { tap } from "@shell/commands/tap.ts";
+import { swipe } from "@shell/commands/swipe.ts";
+import { key } from "@shell/commands/key.ts";
+import { typeText } from "@shell/commands/type-text.ts";
+import { wake } from "@shell/commands/wake.ts";
 
 function createTestContext(
 	mockProvider = createMockAdbProvider(),

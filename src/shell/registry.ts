@@ -1,7 +1,7 @@
 import type { AdbProvider } from "./providers/adb.ts";
-import type { SkillConfig } from "../core/contracts/config.ts";
-import type { CommandResult } from "../core/types/result.ts";
-import type { TraceBuilder } from "../core/types/trace.ts";
+import type { SkillConfig } from "@core/contracts/config.ts";
+import type { CommandResult } from "@core/types/result.ts";
+import type { TraceBuilder } from "@core/types/trace.ts";
 
 /**
  * Command execution context

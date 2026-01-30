@@ -1,9 +1,9 @@
-import { GetScreenInputSchema } from "../../core/contracts/inputs.ts";
-import type { GetScreenOutput } from "../../core/contracts/outputs.ts";
-import { ok, err } from "../../core/types/result.ts";
-import type { CommandResult } from "../../core/types/result.ts";
-import type { CommandContext } from "../registry.ts";
-import { registerCommand } from "../registry.ts";
+import { GetScreenInputSchema } from "@core/contracts/inputs.ts";
+import type { GetScreenOutput } from "@core/contracts/outputs.ts";
+import { ok, err } from "@core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
+import type { CommandContext } from "@shell/registry.ts";
+import { registerCommand } from "@shell/registry.ts";
 
 /**
  * get-screen command - dump UI hierarchy as XML

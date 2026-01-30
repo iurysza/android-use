@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { KEYCODES, resolveKeycode, isKeyName } from "../../core/types/keys.ts";
+import { KEYCODES, resolveKeycode, isKeyName } from "@core/types/keys.ts";
 
 describe("KEYCODES", () => {
 	test("contains navigation keys", () => {

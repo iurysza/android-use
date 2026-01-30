@@ -10,12 +10,12 @@ import {
 	ScreenshotInputSchema,
 	LaunchAppInputSchema,
 	InstallApkInputSchema,
-} from "../../core/contracts/inputs.ts";
+} from "@core/contracts/inputs.ts";
 import {
 	SkillConfigSchema,
 	DEFAULT_CONFIG,
 	mergeConfig,
-} from "../../core/contracts/config.ts";
+} from "@core/contracts/config.ts";
 
 describe("CheckDeviceInputSchema", () => {
 	test("accepts null serial", () => {

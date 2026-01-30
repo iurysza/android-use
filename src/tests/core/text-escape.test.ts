@@ -4,7 +4,7 @@ import {
 	isAsciiPrintable,
 	escapeShellArg,
 	splitTextForInput,
-} from "../../core/domain/text-escape.ts";
+} from "@core/domain/text-escape.ts";
 
 describe("escapeForAdbInput", () => {
 	test("escapes spaces to %s", () => {

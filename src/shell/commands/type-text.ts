@@ -1,10 +1,10 @@
-import { TypeTextInputSchema } from "../../core/contracts/inputs.ts";
-import type { TypeTextOutput } from "../../core/contracts/outputs.ts";
-import { splitTextForInput } from "../../core/domain/text-escape.ts";
-import { ok, err } from "../../core/types/result.ts";
-import type { CommandResult } from "../../core/types/result.ts";
-import type { CommandContext } from "../registry.ts";
-import { registerCommand } from "../registry.ts";
+import { TypeTextInputSchema } from "@core/contracts/inputs.ts";
+import type { TypeTextOutput } from "@core/contracts/outputs.ts";
+import { splitTextForInput } from "@core/domain/text-escape.ts";
+import { ok, err } from "@core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
+import type { CommandContext } from "@shell/registry.ts";
+import { registerCommand } from "@shell/registry.ts";
 
 /**
  * type-text command - type text with proper escaping

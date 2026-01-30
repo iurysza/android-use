@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { ok, err, isOk, isErr, map } from "../../core/types/result.ts";
-import type { CommandResult } from "../../core/types/result.ts";
+import { ok, err, isOk, isErr, map } from "@core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
 
 describe("ok", () => {
 	test("creates success result with data", () => {

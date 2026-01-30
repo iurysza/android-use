@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createTraceBuilder } from "../../core/types/trace.ts";
+import { createTraceBuilder } from "@core/types/trace.ts";
 
 describe("createTraceBuilder", () => {
 	test("creates trace with command name", () => {

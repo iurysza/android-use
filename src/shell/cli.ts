@@ -1,8 +1,5 @@
-import {
-	SkillConfigSchema,
-	type SkillConfig,
-} from "../core/contracts/config.ts";
-import { createTraceBuilder } from "../core/types/trace.ts";
+import { SkillConfigSchema, type SkillConfig } from "@core/contracts/config.ts";
+import { createTraceBuilder } from "@core/types/trace.ts";
 import { createLocalAdbProvider } from "./providers/adb-local.ts";
 import { registry, type CommandContext } from "./registry.ts";
 import { format, type OutputFormat } from "./formatters/index.ts";

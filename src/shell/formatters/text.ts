@@ -1,4 +1,4 @@
-import type { CommandResult } from "../../core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
 
 /**
  * ANSI color codes (basic, works in most terminals)

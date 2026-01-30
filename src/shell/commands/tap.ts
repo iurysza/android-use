@@ -1,9 +1,9 @@
-import { TapInputSchema } from "../../core/contracts/inputs.ts";
-import type { TapOutput } from "../../core/contracts/outputs.ts";
-import { ok, err } from "../../core/types/result.ts";
-import type { CommandResult } from "../../core/types/result.ts";
-import type { CommandContext } from "../registry.ts";
-import { registerCommand } from "../registry.ts";
+import { TapInputSchema } from "@core/contracts/inputs.ts";
+import type { TapOutput } from "@core/contracts/outputs.ts";
+import { ok, err } from "@core/types/result.ts";
+import type { CommandResult } from "@core/types/result.ts";
+import type { CommandContext } from "@shell/registry.ts";
+import { registerCommand } from "@shell/registry.ts";
 
 /**
  * tap command - tap at coordinates
