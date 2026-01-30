@@ -19,31 +19,34 @@ export type Formatter = <T>(result: CommandResult<T>) => string;
  * Formatter registry
  */
 const formatters: Map<OutputFormat, Formatter> = new Map([
-  ["text", formatText],
-  ["json", formatJson],
+	["text", formatText],
+	["json", formatJson],
 ]);
 
 /**
  * Get formatter for output format
  */
 export function getFormatter(format: OutputFormat): Formatter {
-  const formatter = formatters.get(format);
-  if (!formatter) {
-    throw new Error(`Unknown output format: ${format}`);
-  }
-  return formatter;
+	const formatter = formatters.get(format);
+	if (!formatter) {
+		throw new Error(`Unknown output format: ${format}`);
+	}
+	return formatter;
 }
 
 /**
  * Register a custom formatter
  */
 export function registerFormatter(format: string, formatter: Formatter): void {
-  formatters.set(format as OutputFormat, formatter);
+	formatters.set(format as OutputFormat, formatter);
 }
 
 /**
  * Format result using specified format
  */
-export function format<T>(result: CommandResult<T>, outputFormat: OutputFormat): string {
-  return getFormatter(outputFormat)(result);
+export function format<T>(
+	result: CommandResult<T>,
+	outputFormat: OutputFormat,
+): string {
+	return getFormatter(outputFormat)(result);
 }
