@@ -1,0 +1,30 @@
+{
+  "name": "android-use",
+  "version": "0.1.0",
+  "description": "CLI + library for Android device control via ADB",
+  "module": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "android-use": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run src/index.ts",
+    "test": "bun test",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun",
+    "typecheck": "tsc --noEmit",
+    "lint": "bunx biome lint .",
+    "format": "bunx biome format . --write",
+    "format:check": "bunx biome format ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.13",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "zod": "^4.3.6"
+  }
+}
