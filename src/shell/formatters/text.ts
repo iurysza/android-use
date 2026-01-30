@@ -55,11 +55,47 @@ function formatWarning(message: string): string {
 }
 
 /**
+ * Format a value for display
+ */
+function formatValue(value: unknown, indent = 0): string {
+	if (value === null || value === undefined) {
+		return "null";
+	}
+
+	if (Array.isArray(value)) {
+		if (value.length === 0) return "[]";
+		const items = value.map((item) => {
+			const formatted = formatValue(item, indent + 2);
+			return `${"  ".repeat(indent + 1)}- ${formatted}`;
+		});
+		return `\n${items.join("\n")}`;
+	}
+
+	if (typeof value === "object") {
+		const entries = Object.entries(value);
+		if (entries.length === 0) return "{}";
+		const items = entries.map(([k, v]) => {
+			const formatted = formatValue(v, indent + 1);
+			const prefix = typeof v === "object" && v !== null ? `${k}:` : `${k}: `;
+			return `${"  ".repeat(indent + 1)}${prefix}${formatted}`;
+		});
+		return `\n${items.join("\n")}`;
+	}
+
+	return String(value);
+}
+
+/**
  * Format key-value pair
  */
 function formatKV(key: string, value: unknown): string {
 	const keyStr = color(`${key}:`, "dim");
-	return `  ${keyStr} ${String(value)}`;
+	const formatted = formatValue(value);
+	// If value spans multiple lines, put it on next line
+	if (formatted.startsWith("\n")) {
+		return `  ${keyStr}${formatted}`;
+	}
+	return `  ${keyStr} ${formatted}`;
 }
 
 /**
@@ -118,7 +154,8 @@ export function formatData(data: unknown): string {
 	if (typeof data === "object") {
 		const lines: string[] = [];
 		for (const [key, value] of Object.entries(data)) {
-			lines.push(`${key}: ${String(value)}`);
+			const formatted = formatValue(value);
+			lines.push(`${key}: ${formatted}`);
 		}
 		return lines.join("\n");
 	}
