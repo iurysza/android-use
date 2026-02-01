@@ -1,7 +1,7 @@
 {
 	"name": "android-use",
 	"version": "0.1.0",
-	"description": "CLI + library for Android device control via ADB. Automate taps, swipes, text input, screenshots, and app launching.",
+	"description": "CLI + library for Android device control. Automate taps, swipes, text input, screenshots, and app launching with structured output.",
 	"main": "dist/index.js",
 	"module": "src/index.ts",
 	"license": "MIT",

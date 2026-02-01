@@ -8,9 +8,23 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.3.8+-black.svg)](https://bun.sh)
 
-Control Android devices via ADB. Tap, swipe, type, launch apps, and automate UI interactions.
+Control Android devices programmatically. Tap, swipe, type, launch apps, and automate UI interactions with structured, agent-friendly output.
 
 🤖 **Agents, start here:** [Getting Started Guide](./examples/AGENTS_GETTING_STARTED.md)
+
+## Why android-use?
+
+**What:** A semantic layer over ADB. Simplifies and standardizes device interactions into consistent, predictable commands that agents can reliably parse and execute.
+
+**Why:** Raw ADB outputs unstructured text. This tool returns structured JSON with consistent error handling, screen coordinates parsed from accessibility trees, and clear success/failure states. Screen dumps are compact and token-efficient (~50-200 tokens vs thousands for raw XML), perfect for LLM agents with context limits.
+
+**How:** Perception → Action loop. Get the UI state as structured data, reason about it, execute the next action. Repeat.
+
+| Raw ADB | android-use |
+|---------|-------------|
+| `adb shell dumpsys window windows` + parsing | `android-use get-screen` → structured JSON |
+| `adb shell input tap 540 960` | `android-use tap 540 960` with validation |
+| Exit code 0 or manual string checking | Typed results: `{success: true, data: {...}}` |
 
 ## Install
 
