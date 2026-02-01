@@ -5,7 +5,8 @@
 set -e
 
 REPO_URL="https://github.com/iurysza/android-use.git"
-INSTALL_DIR="${HOME}/.config/opencode/skill/android-use"
+SKILL_DIR="${HOME}/.config/opencode/skill/android-use"
+REPO_DIR="$SKILL_DIR/repo"
 SCRIPT_NAME="android-use"
 
 echo "=== android-use Agent Installation ==="
@@ -38,24 +39,30 @@ echo ""
 
 # Create skills directory
 echo "Creating skills directory..."
-mkdir -p "$(dirname "$INSTALL_DIR")"
+mkdir -p "$SKILL_DIR"
 echo ""
 
 # Clone repository
 echo "Cloning repository..."
-if [ -d "$INSTALL_DIR" ]; then
+if [ -d "$REPO_DIR/.git" ]; then
     echo "Directory exists, pulling latest..."
-    cd "$INSTALL_DIR"
+    cd "$REPO_DIR"
     git pull
 else
-    git clone "$REPO_URL" "$INSTALL_DIR"
-    cd "$INSTALL_DIR"
+    # If old structure exists without repo subfolder, backup and re-clone
+    if [ -d "$SKILL_DIR/.git" ]; then
+        echo "Migrating from old structure..."
+        mv "$SKILL_DIR" "${SKILL_DIR}.backup.$(date +%s)"
+        mkdir -p "$SKILL_DIR"
+    fi
+    git clone "$REPO_URL" "$REPO_DIR"
 fi
 echo "✓ Repository cloned/updated"
 echo ""
 
 # Install dependencies
 echo "Installing dependencies..."
+cd "$REPO_DIR"
 bun install
 echo "✓ Dependencies installed"
 echo ""
@@ -66,10 +73,62 @@ bun run build
 echo "✓ Build complete"
 echo ""
 
-# Create wrapper script
+# Create SKILL.md
+echo "Creating SKILL.md..."
+cat > "$SKILL_DIR/SKILL.md" << 'EOF'
+# android-use
+
+Control Android devices via ADB commands.
+
+## Available Tools
+
+- `android-use` - Main CLI tool for device control
+
+## Prerequisites
+
+- Android device with USB debugging enabled
+- ADB installed and in PATH
+- bun runtime
+
+## Usage
+
+```bash
+# Check device connection
+android-use check-device
+
+# Get screen UI hierarchy
+android-use get-screen
+
+# Tap on coordinates
+android-use tap 540 960
+
+# Type text
+android-use type-text "Hello World"
+
+# Press key
+android-use key HOME
+
+# Launch app
+android-use launch-app com.android.chrome
+
+# Swipe
+android-use swipe 540 1500 540 500
+```
+
+## Examples
+
+See `repo/examples/` directory for detailed usage examples.
+EOF
+echo "✓ SKILL.md created"
+echo ""
+
+# Create wrapper script at skill root
 echo "Creating wrapper script..."
-ln -sf "$INSTALL_DIR/dist/index.js" "$INSTALL_DIR/$SCRIPT_NAME"
-chmod +x "$INSTALL_DIR/$SCRIPT_NAME"
+cat > "$SKILL_DIR/$SCRIPT_NAME" << EOF
+#!/bin/bash
+exec "$HOME/.config/opencode/skill/android-use/repo/dist/index.js" "\$@"
+EOF
+chmod +x "$SKILL_DIR/$SCRIPT_NAME"
 echo "✓ Wrapper script created"
 echo ""
 
@@ -82,9 +141,9 @@ elif [ -f "$HOME/.bashrc" ]; then
 fi
 
 if [ -n "$SHELL_CONFIG" ]; then
-    if ! grep -q "$INSTALL_DIR" "$SHELL_CONFIG" 2>/dev/null; then
+    if ! grep -q "$SKILL_DIR" "$SHELL_CONFIG" 2>/dev/null; then
         echo "Adding to PATH in $SHELL_CONFIG..."
-        echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_CONFIG"
+        echo "export PATH=\"$SKILL_DIR:\$PATH\"" >> "$SHELL_CONFIG"
         echo "✓ Added to PATH"
         echo ""
         echo "Note: Run 'source $SHELL_CONFIG' or restart your shell to use 'android-use' directly"
@@ -93,19 +152,28 @@ if [ -n "$SHELL_CONFIG" ]; then
     fi
 else
     echo "Could not find shell config file. Add this to your shell config:"
-    echo "export PATH=\"$INSTALL_DIR:\$PATH\""
+    echo "export PATH=\"$SKILL_DIR:\$PATH\""
 fi
 
 echo ""
 
 # Verify installation
 echo "Verifying installation..."
-if "$INSTALL_DIR/$SCRIPT_NAME" check-device; then
+if "$SKILL_DIR/$SCRIPT_NAME" check-device; then
     echo ""
     echo "=== Installation Complete ==="
     echo ""
+    echo "Structure:"
+    echo "  $SKILL_DIR/"
+    echo "  ├── SKILL.md           # Skill metadata"
+    echo "  ├── android-use        # Wrapper script"
+    echo "  └── repo/              # Git repository"
+    echo "      ├── src/"
+    echo "      ├── dist/"
+    echo "      └── ..."
+    echo ""
     echo "Usage:"
-    echo "  Direct: $INSTALL_DIR/android-use <command>"
+    echo "  Direct: $SKILL_DIR/android-use <command>"
     echo "  Or if in PATH: android-use <command>"
     echo ""
     echo "Quick start:"
@@ -113,11 +181,12 @@ if "$INSTALL_DIR/$SCRIPT_NAME" check-device; then
     echo "  android-use get-screen       # Get UI state"
     echo "  android-use tap 540 960      # Tap screen"
     echo ""
-    echo "See README.md for more examples"
+    echo "See SKILL.md for more examples"
 else
     echo ""
     echo "Installation complete, but device check failed."
     echo "This is expected if no Android device is connected."
     echo ""
-    echo "To use: $INSTALL_DIR/android-use <command>"
+    echo "Structure created at: $SKILL_DIR/"
+    echo "To use: $SKILL_DIR/android-use <command>"
 fi
