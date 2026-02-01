@@ -338,13 +338,13 @@ android-use --json check-device
 
 - **No device**: Check USB, verify USB debugging enabled, accept "Allow USB debugging?" prompt
 - **Element not found**: Get fresh screen dump, try scrolling
-- **Action didn't work**: Wait longer, verify coordinates, check for popups/dialogs
+- **Action didn't work**: Add minimal delay (300ms max) only if retrying, then verify coordinates, check for popups/dialogs, get fresh screen dump
 - **Device offline**: Reconnect USB, run `adb kill-server && adb start-server`
 
 ## Agent Best Practices
 
 1. **Always get-screen first** - understand current UI state
-2. **Wait between actions** - UI needs time to update (~500ms-1s)
+2. **No artificial delays needed** - Commands execute synchronously; UI is ready for next command immediately
 3. **Check your work** - get-screen after each action to verify
 4. **Use screenshots** - when JSON doesn't capture enough info
 5. **Be consistent** - use same serial for all commands in session

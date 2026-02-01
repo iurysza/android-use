@@ -239,7 +239,7 @@ android-use key ENTER
 
 1. **Always check device first** - Run `check-device` before any session
 2. **Use pre-calculated centers** - From JSON `center` field
-3. **Wait between actions** - UI needs 500ms-1s to update
+3. **No need to wait** - Commands are synchronous; UI updates complete before next command. Only add minimal delay (300ms max) if an action fails and you're retrying
 4. **Verify with get-screen** - After each important action
 5. **Handle dialogs** - Popups block interactions
 6. **Use consistent serial** - Same device for all commands in session
@@ -258,9 +258,10 @@ android-use key ENTER
 - Coordinates vary by device resolution
 
 ### Action didn't work
-- Wait longer between actions
+- Add minimal delay (300ms max) only if retrying
 - Verify coordinates
 - Check for blocking dialogs
+- Get fresh screen dump to confirm state
 
 ## Examples
 

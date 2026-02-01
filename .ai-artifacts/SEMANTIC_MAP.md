@@ -1,4 +1,4 @@
-# android-use Semantic Map
+e android-use Semantic Map
 
 ## Project Overview
 
@@ -12,15 +12,15 @@
 
 ## Key Directories
 
-| Directory | Purpose |
-|-----------|---------|
-| `src/` | Main source code |
-| `src/core/` | Domain logic, types, contracts, parsers |
-| `src/shell/` | CLI layer, commands, providers, formatters |
-| `src/tests/` | Unit tests mirroring source structure |
-| `examples/` | Usage tutorials and workflow guides |
-| `dist/` | Compiled output (build target) |
-| `.ai-artifacts/` | AI-generated documentation (this file) |
+| Directory        | Purpose                                    |
+| ---------------- | ------------------------------------------ |
+| `src/`           | Main source code                           |
+| `src/core/`      | Domain logic, types, contracts, parsers    |
+| `src/shell/`     | CLI layer, commands, providers, formatters |
+| `src/tests/`     | Unit tests mirroring source structure      |
+| `examples/`      | Usage tutorials and workflow guides        |
+| `dist/`          | Compiled output (build target)             |
+| `.ai-artifacts/` | AI-generated documentation (this file)     |
 
 ## Architecture
 
@@ -55,11 +55,11 @@
 
 ## Entry Points
 
-| File | Purpose |
-|------|---------|
-| `src/index.ts` | CLI entry point - parses args and delegates to `runCli()` |
+| File               | Purpose                                                         |
+| ------------------ | --------------------------------------------------------------- |
+| `src/index.ts`     | CLI entry point - parses args and delegates to `runCli()`       |
 | `src/shell/cli.ts` | Main CLI logic: arg parsing, command routing, output formatting |
-| `dist/index.js` | Compiled CLI binary (package.json `bin` entry) |
+| `dist/index.js`    | Compiled CLI binary (package.json `bin` entry)                  |
 
 ## Core Modules
 
@@ -67,66 +67,66 @@
 
 All commands follow the same pattern: validate input with Zod → execute ADB → return `CommandResult`.
 
-| Command | File | Purpose |
-|---------|------|---------|
-| `check-device` | `check-device.ts` | List connected devices with status |
-| `wake` | `wake.ts` | Wake device and dismiss lock screen |
-| `get-screen` | `get-screen.ts` | Dump UI hierarchy (compact JSON or full XML) |
-| `tap` | `tap.ts` | Tap at screen coordinates |
-| `type-text` | `type-text.ts` | Type text with shell escaping |
-| `swipe` | `swipe.ts` | Swipe gesture between coordinates |
-| `key` | `key.ts` | Press key by name or code |
-| `screenshot` | `screenshot.ts` | Capture screen to file |
-| `launch-app` | `launch-app.ts` | Launch app by package name |
-| `install-apk` | `install-apk.ts` | Install APK file |
+| Command        | File              | Purpose                                      |
+| -------------- | ----------------- | -------------------------------------------- |
+| `check-device` | `check-device.ts` | List connected devices with status           |
+| `wake`         | `wake.ts`         | Wake device and dismiss lock screen          |
+| `get-screen`   | `get-screen.ts`   | Dump UI hierarchy (compact JSON or full XML) |
+| `tap`          | `tap.ts`          | Tap at screen coordinates                    |
+| `type-text`    | `type-text.ts`    | Type text with shell escaping                |
+| `swipe`        | `swipe.ts`        | Swipe gesture between coordinates            |
+| `key`          | `key.ts`          | Press key by name or code                    |
+| `screenshot`   | `screenshot.ts`   | Capture screen to file                       |
+| `launch-app`   | `launch-app.ts`   | Launch app by package name                   |
+| `install-apk`  | `install-apk.ts`  | Install APK file                             |
 
 ### ADB Providers (`src/shell/providers/`)
 
-| File | Purpose |
-|------|---------|
-| `adb.ts` | `AdbProvider` interface and utilities |
-| `adb-local.ts` | Local ADB execution via Bun.spawn() |
-| `adb-mock.ts` | Mock provider for testing |
+| File           | Purpose                               |
+| -------------- | ------------------------------------- |
+| `adb.ts`       | `AdbProvider` interface and utilities |
+| `adb-local.ts` | Local ADB execution via Bun.spawn()   |
+| `adb-mock.ts`  | Mock provider for testing             |
 
 ### Core Types (`src/core/types/`)
 
-| File | Purpose |
-|------|---------|
-| `result.ts` | `CommandResult<T>` type and `ok()`/`err()`/`map()` helpers |
-| `trace.ts` | Execution tracing for observability |
-| `keys.ts` | Android keycode constants and resolution |
-| `device.ts` | Device info types |
-| `coordinates.ts` | Coordinate/point types |
-| `app.ts` | App-related types |
+| File             | Purpose                                                    |
+| ---------------- | ---------------------------------------------------------- |
+| `result.ts`      | `CommandResult<T>` type and `ok()`/`err()`/`map()` helpers |
+| `trace.ts`       | Execution tracing for observability                        |
+| `keys.ts`        | Android keycode constants and resolution                   |
+| `device.ts`      | Device info types                                          |
+| `coordinates.ts` | Coordinate/point types                                     |
+| `app.ts`         | App-related types                                          |
 
 ### Contracts (`src/core/contracts/`)
 
-| File | Purpose |
-|------|---------|
-| `inputs.ts` | Zod schemas for all command inputs |
+| File         | Purpose                             |
+| ------------ | ----------------------------------- |
+| `inputs.ts`  | Zod schemas for all command inputs  |
 | `outputs.ts` | Zod schemas for all command outputs |
-| `config.ts` | `SkillConfig` schema with defaults |
+| `config.ts`  | `SkillConfig` schema with defaults  |
 
 ### Domain Logic (`src/core/domain/`)
 
-| File | Purpose |
-|------|---------|
-| `text-escape.ts` | Shell text escaping for ADB input |
-| `device-parser.ts` | Parse `adb devices -l` output |
+| File               | Purpose                           |
+| ------------------ | --------------------------------- |
+| `text-escape.ts`   | Shell text escaping for ADB input |
+| `device-parser.ts` | Parse `adb devices -l` output     |
 
 ### Parsers (`src/core/parsers/`)
 
-| File | Purpose |
-|------|---------|
+| File            | Purpose                                                           |
+| --------------- | ----------------------------------------------------------------- |
 | `screen-xml.ts` | Parse UI Automator XML → compact JSON with pre-calculated centers |
 
 ### Utilities
 
-| File | Purpose |
-|------|---------|
-| `src/core/cache.ts` | Memory-backed cache directory management (`/tmp/.ai-artifacts/...`) |
-| `src/shell/formatters/` | Text and JSON output formatters |
-| `src/shell/registry.ts` | Command registry with before/after hooks |
+| File                    | Purpose                                                             |
+| ----------------------- | ------------------------------------------------------------------- |
+| `src/core/cache.ts`     | Memory-backed cache directory management (`/tmp/.ai-artifacts/...`) |
+| `src/shell/formatters/` | Text and JSON output formatters                                     |
+| `src/shell/registry.ts` | Command registry with before/after hooks                            |
 
 ## Testing Approach
 
@@ -154,23 +154,23 @@ src/tests/
 
 ## Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `package.json` | Dependencies, scripts, bin entry |
+| File            | Purpose                                                     |
+| --------------- | ----------------------------------------------------------- |
+| `package.json`  | Dependencies, scripts, bin entry                            |
 | `tsconfig.json` | TypeScript config with path aliases (`@core/*`, `@shell/*`) |
-| `biome.json` | Linting and formatting (Biome) |
-| `SKILL.md` | Skill documentation for AI agents |
-| `AGENTS.md` | Agent-specific quality guidelines |
+| `biome.json`    | Linting and formatting (Biome)                              |
+| `SKILL.md`      | Skill documentation for AI agents                           |
+| `AGENTS.md`     | Agent-specific quality guidelines                           |
 
 ## External Dependencies
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `zod` | ^4.3.6 | Runtime schema validation |
-| `@biomejs/biome` | ^2.3.13 | Linting and formatting |
-| `@types/bun` | ^1.1.0 | Bun type definitions |
-| `husky` | ^9.0.0 | Git hooks |
-| `typescript` | ^5.0.0 (peer) | TypeScript compiler |
+| Package          | Version       | Purpose                   |
+| ---------------- | ------------- | ------------------------- |
+| `zod`            | ^4.3.6        | Runtime schema validation |
+| `@biomejs/biome` | ^2.3.13       | Linting and formatting    |
+| `@types/bun`     | ^1.1.0        | Bun type definitions      |
+| `husky`          | ^9.0.0        | Git hooks                 |
+| `typescript`     | ^5.0.0 (peer) | TypeScript compiler       |
 
 ## Key Features
 
