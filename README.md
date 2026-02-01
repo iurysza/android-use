@@ -1,7 +1,7 @@
 # android-use
 
 <p align="center">
-  <img src="./assets/logo.png" alt="android-use logo" width="400">
+  <img src="./assets/logo-banner.png?v=2" alt="android-use logo" width="400">
 </p>
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/iurysza/android-use/releases)
