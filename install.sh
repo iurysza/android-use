@@ -1,15 +1,74 @@
 #!/bin/bash
 # Agent Autonomous Installation Script for android-use
 # This script can be run by AI agents to automatically set up the skill
+#
+# Usage: ./install.sh [OPTIONS]
+#
+# Options:
+#   --claude-code, -c     Install for Claude Code environment
+#   --agent=NAME          Install for specific agent (claude-code, opencode, etc.)
+#   --non-interactive, -n Run without interactive prompts
+#   --help, -h            Show this help message
 
 set -e
 
+# Parse command line arguments
+AGENT=""
+NON_INTERACTIVE=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --claude-code|-c)
+      AGENT="claude-code"
+      shift
+      ;;
+    --agent=*)
+      AGENT="${1#*=}"
+      shift
+      ;;
+    --agent)
+      AGENT="$2"
+      shift 2
+      ;;
+    --non-interactive|-n)
+      NON_INTERACTIVE=true
+      shift
+      ;;
+    --help|-h)
+      echo "Usage: ./install.sh [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --claude-code, -c     Install for Claude Code environment"
+      echo "  --agent=NAME          Install for specific agent (claude-code, opencode, etc.)"
+      echo "  --non-interactive, -n Run without interactive prompts"
+      echo "  --help, -h            Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      echo "Use --help for usage information"
+      exit 1
+      ;;
+  esac
+done
+
 REPO_URL="https://github.com/iurysza/android-use.git"
-SKILL_DIR="${HOME}/.config/opencode/skill/android-use"
-REPO_DIR="$SKILL_DIR/repo"
 SCRIPT_NAME="android-use"
 
+# Set skill directory based on agent
+if [ "$AGENT" = "claude-code" ]; then
+  SKILL_DIR="${HOME}/.claude/skills/android-use"
+else
+  SKILL_DIR="${HOME}/.config/opencode/skill/android-use"
+fi
+
+REPO_DIR="$SKILL_DIR/repo"
+
 echo "=== android-use Agent Installation ==="
+if [ -n "$AGENT" ]; then
+  echo "Agent: $AGENT"
+  echo "Install path: $SKILL_DIR"
+fi
 echo ""
 
 # Check prerequisites
@@ -126,7 +185,7 @@ echo ""
 echo "Creating wrapper script..."
 cat > "$SKILL_DIR/$SCRIPT_NAME" << EOF
 #!/bin/bash
-exec "$HOME/.config/opencode/skill/android-use/repo/dist/index.js" "\$@"
+exec "$SKILL_DIR/repo/dist/index.js" "\$@"
 EOF
 chmod +x "$SKILL_DIR/$SCRIPT_NAME"
 echo "✓ Wrapper script created"
