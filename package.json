@@ -41,7 +41,7 @@
 	"scripts": {
 		"dev": "bun run --watch src/index.ts",
 		"start": "bun run src/index.ts",
-		"test": "bun test",
+		"test": "bun test src",
 		"build": "bun build ./src/index.ts --outdir ./dist --target bun && chmod +x ./dist/index.js",
 		"typecheck": "tsc --noEmit",
 		"lint": "bunx biome lint .",
