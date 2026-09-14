@@ -25,3 +25,6 @@ bun run format && bun run lint && bun run typecheck && bun test
 ## Notes
 - Formatting and linting are handled by Biome (`biome.json`).
 - Use `bun run <script>` to avoid name collisions with Bun built-ins.
+
+## Git commits
+Never include Cursor (or any Cursor agent/bot) as git author, committer, or in a Co-authored-by / similar trailer.
