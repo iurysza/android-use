@@ -1,5 +1,20 @@
 # AGENTS.md
 
+CLI/agent skill for structured Android device control.
+
+## Map
+
+| Path | What lives there |
+| --- | --- |
+| `README.md` | Product overview, install, and command examples |
+| `src/` | CLI and library source |
+| `references/` | Agent setup and usage patterns |
+| `ai-artifacts/` | How-it-works docs for agents |
+
+## ai-artifacts
+
+How-it-works docs belong in `ai-artifacts/`. Update them when architecture or behavior changes. Start at [ai-artifacts/_index.md](./ai-artifacts/_index.md).
+
 ## Quality tools (Bun)
 - Lint: `bun run lint` (Biome)
 - Format (write): `bun run format` (Biome)
