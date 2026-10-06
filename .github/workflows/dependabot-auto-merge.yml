@@ -1,0 +1,64 @@
+name: Dependabot auto-merge
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Dependabot-triggered pull_request runs start with a read-only token.
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: dependabot-auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  auto-merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # main has no required status checks, so `gh pr merge --auto` would
+      # merge before CI finishes. Wait for the CI workflow, then squash-merge.
+      - name: Squash-merge after CI succeeds
+        if: steps.metadata.outputs.update-type != 'version-update:semver-major'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          deadline=$((SECONDS + 1800))
+          while (( SECONDS < deadline )); do
+            info=$(gh run list \
+              --repo "$GITHUB_REPOSITORY" \
+              --workflow ci.yml \
+              --commit "$HEAD_SHA" \
+              --event pull_request \
+              --limit 1 \
+              --json status,conclusion \
+              --jq '(if length == 0 then {status: "missing", conclusion: ""} else .[0] end) | [(.status // "missing"), (.conclusion // "")] | @tsv')
+            status=${info%%$'\t'*}
+            conclusion=${info#*$'\t'}
+            echo "CI status=${status} conclusion=${conclusion}"
+            if [[ "$status" == "completed" && "$conclusion" == "success" ]]; then
+              gh pr merge --squash --match-head-commit "$HEAD_SHA" "$PR_URL"
+              exit 0
+            fi
+            if [[ "$status" == "completed" ]]; then
+              echo "CI finished with ${conclusion}. Leaving the pull request open."
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "Timed out waiting for the CI workflow on ${HEAD_SHA}."
+          exit 1
